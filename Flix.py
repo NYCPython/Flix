@@ -25,6 +25,9 @@ top = urwid.Filler(pile, valign='top')
 def menu(title, choices):
     body = [urwid.Text(title), urwid.Divider()]
     
+    if not isinstance(choices, list):
+        choices = [choices]
+    
     for c in choices:
         c= c['title']['short']     #Bug: Program Crashes when c in choices < 2
         button = urwid.Button(c)
@@ -38,21 +41,19 @@ def item_chosen(button, choice):
 
 #Action when the edit box is updated
 def on_ask_change(edit, new_edit_text):
-
-    movies = api.get("catalog/titles/autocomplete", {"term":new_edit_text})
     
-    #Handles the case where there are no results
-    if 'autocomplete_item' in movies['autocomplete']:
+    if new_edit_text:
+        movies = api.get("catalog/titles/autocomplete", {"term":new_edit_text})
         titlebox = menu(u"Results for %s" %new_edit_text, movies['autocomplete']['autocomplete_item'])
         listbox._set_original_widget(titlebox)     #updates the listbox
-    else:        
+    else:
         listbox._set_original_widget(listboxreset) #clears the listbox
- 
+
 #Exit program on click 
 def on_exit_clicked(button):
     raise urwid.ExitMainLoop()
     
 urwid.connect_signal(ask, 'change', on_ask_change)
-urwid.connect_signal(button, 'click', exit_program)
+urwid.connect_signal(button, 'click', on_exit_clicked)
 
 urwid.MainLoop(top).run()
