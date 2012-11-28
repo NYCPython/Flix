@@ -1,9 +1,9 @@
 import netflix
 import urwid
 import ConfigParser, os
-import time
 
-n_results = 10
+n_results = 10  #Number of results to show in the listbox
+
 #Modify the Flix.cfg file to include your Netflix API key and secret values
 config=ConfigParser.ConfigParser()
 config.read('Flix.cfg')             #loads the config file
@@ -26,7 +26,7 @@ def menu(title, choices):
     body = [urwid.Text(title), urwid.Divider()]
     
     for c in choices:
-        c= c['title']['short']     ###Bug Here: Crashes when list has single item
+        c= c['title']['short']     #Bug: Program Crashes when c in choices < 2
         button = urwid.Button(c)
         urwid.connect_signal(button, 'click', item_chosen, c)
         body.append(urwid.AttrMap(button, None, focus_map='reversed'))
